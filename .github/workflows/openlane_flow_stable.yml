@@ -1,0 +1,49 @@
+name: Run user project with stable OpenLane
+
+on: [push]
+
+jobs:
+
+  ol_stable:
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Checkout current repo
+        uses: actions/checkout@v3
+
+      - name: Checkout Caravel
+        uses: actions/checkout@v3
+        with:
+          repository: efabless/caravel
+          ref: mpw-5b
+          path: caravel
+
+      - name: Export PDK ROOT
+        run: echo "PDK_ROOT=${{ runner.temp  }}/pdks" >> $GITHUB_ENV
+
+      - name: Export OpenLane ROOT
+        run: echo "OPENLANE_ROOT=${GITHUB_WORKSPACE}/openlane_src" >> $GITHUB_ENV
+
+      - name: Install OpenLane
+        run: make openlane
+
+      - name: Get PDKs cache
+        uses: vvbandeira/actions/cache_pdks@new
+        with:
+          ol_path: "${OPENLANE_ROOT}"
+          pdk_root: "${PDK_ROOT}"
+
+      - name: Install base
+        run: make install
+
+      - name: Install mcw
+        run: make install_mcw
+
+      - name: Install simenv
+        run: make simenv
+
+      - name: OpenLane User Project
+        run: make user_proj_example
+
+      - name: OpenLane User Project Wrapper
+        run: make user_project_wrapper
