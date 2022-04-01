@@ -24,9 +24,6 @@ jobs:
       - name: Export OpenLane ROOT
         run: echo "OPENLANE_ROOT=${GITHUB_WORKSPACE}/openlane_src" >> $GITHUB_ENV
 
-      - name: Install OpenLane
-        run: make openlane
-
       - name: Checkout Latest OpenLane
         uses: actions/checkout@v3
         with:
